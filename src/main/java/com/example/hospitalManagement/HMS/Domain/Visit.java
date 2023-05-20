@@ -43,6 +43,7 @@ public class Visit {
 
     private String summary;
     private String description;
+    private String treatment;
     private Integer prescription;
 
     @ManyToOne
@@ -58,6 +59,9 @@ public class Visit {
     private XRay x_ray_image;
 
 
+    public Visit(int id) {
+        this.id = id;
+    }
 
 
 }
