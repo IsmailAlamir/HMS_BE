@@ -20,6 +20,7 @@ public class XRay {
     @Column(name = "id", nullable = false)
     private Integer id;
 
+    private String description;
     private String names;
     private String folder_url;
     private Date add_date;

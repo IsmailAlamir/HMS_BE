@@ -20,7 +20,7 @@ public class Medicine {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-
+    private String description;
     private String names;
     private Integer doses;
     private Date add_date;
