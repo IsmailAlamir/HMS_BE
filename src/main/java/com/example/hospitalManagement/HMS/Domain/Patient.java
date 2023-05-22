@@ -1,6 +1,7 @@
 package com.example.hospitalManagement.HMS.Domain;
 
 
+import com.example.hospitalManagement.HMS.Domain.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,7 +9,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 @Data
@@ -19,7 +19,7 @@ import java.util.Set;
 @PrimaryKeyJoinColumn(name = "user_id") //establishing the one-to-one relationship between the User and Patient entities.
 @EqualsAndHashCode(callSuper = true)
 @Inheritance(strategy = InheritanceType.JOINED)
-public class Patient extends User{
+public class Patient extends User {
 
 
     private Date birthday;

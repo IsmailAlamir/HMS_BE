@@ -2,6 +2,8 @@ package com.example.hospitalManagement.HMS.Controller;
 
 
 import com.example.hospitalManagement.HMS.Domain.*;
+import com.example.hospitalManagement.HMS.Domain.user.Role;
+import com.example.hospitalManagement.HMS.Domain.user.User;
 import com.example.hospitalManagement.HMS.repository.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
