@@ -1,10 +1,10 @@
 package com.example.hospitalManagement.HMS.Domain;
 
 
+import com.example.hospitalManagement.HMS.Domain.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Setter

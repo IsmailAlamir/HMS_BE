@@ -1,7 +1,7 @@
 package com.example.hospitalManagement.HMS.repository;
 
-import com.example.hospitalManagement.HMS.Domain.Role;
-import com.example.hospitalManagement.HMS.Domain.User;
+import com.example.hospitalManagement.HMS.Domain.user.Role;
+import com.example.hospitalManagement.HMS.Domain.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,7 +1,7 @@
 package com.example.hospitalManagement.HMS.DTO;
 
 import com.example.hospitalManagement.HMS.Domain.Patient;
-import com.example.hospitalManagement.HMS.Domain.User;
+import com.example.hospitalManagement.HMS.Domain.user.User;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -1,4 +1,4 @@
-package com.example.hospitalManagement.HMS.Domain;
+package com.example.hospitalManagement.HMS.Domain.user;
 
 public enum Role {
 
