@@ -1,4 +1,24 @@
 # HMS_BE
+
+## Routes :
+
+to get all doctors :
+http://localhost:8080/all/doctors
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Data Base
 #### SQL Commnad
 **Create users for each role**

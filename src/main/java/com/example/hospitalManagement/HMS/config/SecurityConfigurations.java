@@ -35,6 +35,8 @@ public class SecurityConfigurations {
                 .authorizeHttpRequests()
                 .requestMatchers("/api/v1/auth/**")
                 .permitAll()
+                        .requestMatchers("/all/**")
+                        .permitAll()
 
                     //another way
                 /* .requestMatchers("/api/v1/admin/**").hasRole(ADMIN.name())

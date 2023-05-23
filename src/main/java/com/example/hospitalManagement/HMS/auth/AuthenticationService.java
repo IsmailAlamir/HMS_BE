@@ -1,12 +1,15 @@
 package com.example.hospitalManagement.HMS.auth;
 
 
+import com.example.hospitalManagement.HMS.Domain.Patient;
 import com.example.hospitalManagement.HMS.Domain.token.Token;
 import com.example.hospitalManagement.HMS.Domain.token.TokenRepository;
 import com.example.hospitalManagement.HMS.Domain.token.TokenType;
+import com.example.hospitalManagement.HMS.Domain.user.Role;
 import com.example.hospitalManagement.HMS.Domain.user.UesrRepository;
 import com.example.hospitalManagement.HMS.Domain.user.User;
 import com.example.hospitalManagement.HMS.config.JwtService;
+import com.example.hospitalManagement.HMS.repository.PatientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,7 +23,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthenticationService {
 
-    private final UesrRepository repository;
+    private final UesrRepository userRepository;
+    private final PatientRepository patientRepository;
     private final TokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
@@ -28,7 +32,7 @@ public class AuthenticationService {
     private final UserDetailsService userDetailsService;
 
     public AuthenticationResponse register(RegisterRequest request) {
-        var user= User.builder()
+        var user = User.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .location(request.getLocation())
@@ -36,11 +40,24 @@ public class AuthenticationService {
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(request.getRole())
+                .role(Role.PATIENT)
                 .build();
-        var savedUser= repository.save(user);
-        var jwtToken = jwtService.generateToken(user);
+        var savedUser = userRepository.save(user);
+
+        var patient = Patient.builder()
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .location(request.getLocation())
+                .phone(request.getPhone())
+                .username(request.getUsername())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(Role.PATIENT)
+                .build();
+
+        var jwtToken = jwtService.generateToken(savedUser);
         saveUserToken(savedUser, jwtToken);
+
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .build();
@@ -51,10 +68,10 @@ public class AuthenticationService {
         User user;
 
         if (request.getEmail() == null) {
-            user = repository.findByUsername(request.getUsername())
+            user = userRepository.findByUsername(request.getUsername())
                     .orElseThrow();
         } else {
-            user = repository.findByEmail(request.getEmail())
+            user = userRepository.findByEmail(request.getEmail())
                     .orElseThrow();
         }
 

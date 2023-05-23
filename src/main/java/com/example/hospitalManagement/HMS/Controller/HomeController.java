@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1")
 public class HomeController {
 
     private final UserRepository userRepository;
@@ -51,16 +50,15 @@ public class HomeController {
 //    }
 
 
-    // create patient ==== anyone
-    @ResponseBody
-    @PostMapping("/new-patient")
-    public Patient createPatientInfo(@RequestBody Patient patient){
-        if (patient.getRole() != Role.PATIENT) {
-            throw new IllegalArgumentException("Invalid role. 'PATIENT' role is required for this endpoint.");
-        }
-
-        return patientRepository.save(patient);
-    }
+    // create patient ===== anyone
+//    @ResponseBody
+//    @PutMapping("/patient/info")
+//    public Patient createPatientInfo(@RequestBody Patient patient){
+////        if (patient.getRole() != Role.PATIENT) {
+////            throw new IllegalArgumentException("Invalid role. 'PATIENT' role is required for this endpoint.");
+////        }
+//        return patientRepository.save(patient);
+//    }
 
 
 
@@ -101,28 +99,28 @@ public class HomeController {
 
     // get all doctors
     @ResponseBody
-    @GetMapping("/all-doctors")
+    @GetMapping("/all/doctors")
     public List<User> getAllDoctors() {
         return userRepository.findAllByRole(Role.DOCTOR);
     }
 
     // get all labs
     @ResponseBody
-    @GetMapping("/all-labs")
+    @GetMapping("/all/labs")
     public List<User> getAllLabs() {
         return userRepository.findAllByRole(Role.LAB);
     }
 
     // get all pharmacists
     @ResponseBody
-    @GetMapping("/all-pharmacists")
+    @GetMapping("/all/pharmacists")
     public List<User> getAllPharmacists() {
         return userRepository.findAllByRole(Role.PHARMACIST);
     }
 
     // get all x-rays
     @ResponseBody
-    @GetMapping("/all-x-rays")
+    @GetMapping("/all/x-rays")
     public List<User> getAllXRays() {
         return userRepository.findAllByRole(Role.XRAY);
     }
