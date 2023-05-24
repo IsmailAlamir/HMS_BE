@@ -1,6 +1,6 @@
 package com.example.hospitalManagement.HMS.config;
 
-import com.example.hospitalManagement.HMS.Domain.user.UesrRepository;
+import com.example.hospitalManagement.HMS.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @RequiredArgsConstructor
 public class ApplicationConfig {
 
-    private final UesrRepository repository;
+    private final UserRepository repository;
 
     @Bean //always should be public
     public UserDetailsService userDetailsService(){

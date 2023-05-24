@@ -1,11 +1,13 @@
 package com.example.hospitalManagement.HMS.auth;
 
+import com.example.hospitalManagement.HMS.Domain.Patient;
+import com.example.hospitalManagement.HMS.Domain.user.Role;
+import com.example.hospitalManagement.HMS.Domain.user.User;
+import com.example.hospitalManagement.HMS.repository.PatientRepository;
+import com.example.hospitalManagement.HMS.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -13,12 +15,31 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
+    private final UserRepository userRepository;
+    private final PatientRepository patientRepository;
+
+
+
+//    @ResponseBody
+//    @PostMapping("/new-patient")
+//    public Patient createNewUser(@RequestBody Patient patient){
+//
+//        return patientRepository.save(patient);
+//
+//    }
+    @ResponseBody
+    @PostMapping("/new-patient")
+    public ResponseEntity<AuthenticationResponse> createNewUser(@RequestBody Patient patient){
+
+        return ResponseEntity.ok(authenticationService.patientRegister(patient));
+    }
+
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(
-            @RequestBody RegisterRequest request
+            @RequestBody Patient patient
     ){
-        return ResponseEntity.ok(authenticationService.register(request));
+        return ResponseEntity.ok(authenticationService.register(patient));
     }
     // It receives a RegisterRequest object in the request body 
     // and returns a ResponseEntity<AuthenticationResponse> containing the response from the service.register() method.

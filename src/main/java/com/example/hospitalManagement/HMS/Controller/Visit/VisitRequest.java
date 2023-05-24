@@ -1,4 +1,4 @@
-package com.example.hospitalManagement.HMS.Controller;
+package com.example.hospitalManagement.HMS.Controller.Visit;
 
 import lombok.Data;
 
