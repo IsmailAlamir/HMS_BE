@@ -6,10 +6,10 @@ import com.example.hospitalManagement.HMS.Domain.token.Token;
 import com.example.hospitalManagement.HMS.Domain.token.TokenRepository;
 import com.example.hospitalManagement.HMS.Domain.token.TokenType;
 import com.example.hospitalManagement.HMS.Domain.user.Role;
-import com.example.hospitalManagement.HMS.Domain.user.UesrRepository;
 import com.example.hospitalManagement.HMS.Domain.user.User;
 import com.example.hospitalManagement.HMS.config.JwtService;
 import com.example.hospitalManagement.HMS.repository.PatientRepository;
+import com.example.hospitalManagement.HMS.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,13 +17,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Service
 
 @RequiredArgsConstructor
 public class AuthenticationService {
-
-    private final UesrRepository userRepository;
+    private final UserRepository userRepository;
     private final PatientRepository patientRepository;
     private final TokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
@@ -31,29 +33,50 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
 
-    public AuthenticationResponse register(RegisterRequest request) {
-        var user = User.builder()
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .location(request.getLocation())
-                .phone(request.getPhone())
-                .username(request.getUsername())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.PATIENT)
-                .build();
-        var savedUser = userRepository.save(user);
 
-        var patient = Patient.builder()
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .location(request.getLocation())
-                .phone(request.getPhone())
-                .username(request.getUsername())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
+    public AuthenticationResponse patientRegister(Patient patient) {
+//        patientRepository.save(user);
+
+        var newUser = new Patient();
+        newUser.setFirstName(patient.getFirstName());
+        newUser.setLastName(patient.getLastName());
+        newUser.setLocation(patient.getLocation());
+        newUser.setPhone(patient.getPhone());
+        newUser.setUsername(patient.getUsername());
+        newUser.setEmail(patient.getEmail());
+        newUser.setPassword(passwordEncoder.encode(patient.getPassword()));
+        newUser.setRole(Role.PATIENT);
+
+        var savedUser = patientRepository.save(newUser);
+
+        var jwtToken = jwtService.generateToken(savedUser);
+        saveUserToken(savedUser, jwtToken);
+
+        var authenticationResponse = new AuthenticationResponse();
+        authenticationResponse.setAccessToken(jwtToken);
+
+        return authenticationResponse;
+    }
+
+
+
+
+    public AuthenticationResponse register(Patient user) {
+         patientRepository.save(user);
+
+        var newUser = User.builder()
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .location(user.getLocation())
+                .phone(user.getPhone())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .password(passwordEncoder.encode(user.getPassword()))
                 .role(Role.PATIENT)
                 .build();
+
+        var savedUser = userRepository.save(newUser);
+
 
         var jwtToken = jwtService.generateToken(savedUser);
         saveUserToken(savedUser, jwtToken);

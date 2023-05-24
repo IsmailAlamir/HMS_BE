@@ -3,14 +3,13 @@ package com.example.hospitalManagement.HMS.Domain;
 
 import com.example.hospitalManagement.HMS.Domain.user.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Date;
 import java.util.Set;
 
+
+@Builder(builderMethodName = "patientBuilder")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -39,3 +38,4 @@ public class Patient extends User {
 
 
 }
+
