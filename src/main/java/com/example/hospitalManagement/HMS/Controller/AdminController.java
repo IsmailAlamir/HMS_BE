@@ -49,6 +49,7 @@ public class AdminController {
     @ResponseBody
     @PostMapping("/new-user")
     @PreAuthorize("hasAuthority('admin:create')")
+
     public User createNewUser(@RequestBody User user){
 //        if (user.getRole() == Role.PATIENT) {
 //            throw new IllegalArgumentException("Invalid role. 'PATIENT' role is not allowed for this endpoint.");

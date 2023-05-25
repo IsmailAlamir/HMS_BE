@@ -10,10 +10,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/doctor")
+@RequestMapping("/api/v1/{doctorID}/doctor")
 @PreAuthorize("hasRole('DOCTOR')")
 public class DoctorController {
-
     private final UserRepository userRepository;
     private final PatientRepository patientRepository;
     private final VisitRepository visitRepository;
@@ -59,18 +58,18 @@ public class DoctorController {
     @ResponseBody
     @PostMapping("/create/visit")
     @PreAuthorize("hasAuthority('doctor:create')")
-    public Visit createVisit(@RequestBody VisitRequest visitRequest) {
-
+    public String createVisit(@RequestBody VisitRequest visitRequest , @PathVariable int doctorID) {
         User patient = patientRepository.findById(visitRequest.getPatient_id())
                 .orElseThrow(() -> new IllegalArgumentException("Patient not found."));
-        User doctor = userRepository.findById(visitRequest.getDoctor_id())
+        User doctor = userRepository.findById(doctorID)
                 .orElseThrow(() -> new IllegalArgumentException("Doctor not found."));
 
         Visit visit = new Visit();
         visit.setPatient(patient);
         visit.setDoctor(doctor);
+        visitRepository.save(visit);
 
-        return visitRepository.save(visit);
+        return "visit created";
     }
 
 
@@ -78,10 +77,12 @@ public class DoctorController {
     @ResponseBody
     @PutMapping("/visits/{visitId}")
     @PreAuthorize("hasAuthority('doctor:update')")
-    public Visit updateVisitDetails(
-            @PathVariable Integer visitId,
+    public String updateVisitDetails(
+            @PathVariable int visitId,
             @RequestBody VisitDetailsRequest visitDetailsRequest
     ) {
+        System.out.println(visitDetailsRequest);
+        System.out.println(visitId);
         Visit visit = visitRepository.findById(visitId)
                 .orElseThrow(() -> new IllegalArgumentException("Visit not found."));
 
@@ -89,9 +90,14 @@ public class DoctorController {
         visit.setDescription(visitDetailsRequest.getDescription());
         visit.setPrescription(visitDetailsRequest.getPrescription());
         visit.setTreatment(visitDetailsRequest.getTreatment());
-
-        return visitRepository.save(visit);
+        visitRepository.save(visit);
+        return "Done";
     }
+
+
+
+
+
 
 
 }

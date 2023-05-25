@@ -7,6 +7,7 @@ import com.example.hospitalManagement.HMS.repository.PatientRepository;
 import com.example.hospitalManagement.HMS.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,20 +29,21 @@ public class AuthenticationController {
 //
 //    }
     @ResponseBody
-    @PostMapping("/new-patient")
+    @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> createNewUser(@RequestBody Patient patient){
 
         return ResponseEntity.ok(authenticationService.patientRegister(patient));
     }
 
 
-    @PostMapping("/register")
+    @PostMapping("/admin/register")
+    @PreAuthorize("hasAuthority('admin:create')")
     public ResponseEntity<AuthenticationResponse> register(
-            @RequestBody Patient patient
+            @RequestBody User user
     ){
-        return ResponseEntity.ok(authenticationService.register(patient));
+        return ResponseEntity.ok(authenticationService.adminRegister(user));
     }
-    // It receives a RegisterRequest object in the request body 
+    // It receives a RegisterRequest object in the request body
     // and returns a ResponseEntity<AuthenticationResponse> containing the response from the service.register() method.
 
 
