@@ -61,8 +61,7 @@ public class AuthenticationService {
 
 
 
-    public AuthenticationResponse register(Patient user) {
-         patientRepository.save(user);
+    public AuthenticationResponse adminRegister(User user) {
 
         var newUser = User.builder()
                 .firstName(user.getFirstName())
@@ -72,11 +71,10 @@ public class AuthenticationService {
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .password(passwordEncoder.encode(user.getPassword()))
-                .role(Role.PATIENT)
+                .role(user.getRole())
                 .build();
 
         var savedUser = userRepository.save(newUser);
-
 
         var jwtToken = jwtService.generateToken(savedUser);
         saveUserToken(savedUser, jwtToken);

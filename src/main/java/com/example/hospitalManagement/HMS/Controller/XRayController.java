@@ -2,24 +2,27 @@ package com.example.hospitalManagement.HMS.Controller;
 
 import com.example.hospitalManagement.HMS.Domain.Visit;
 import com.example.hospitalManagement.HMS.Domain.XRay;
+import com.example.hospitalManagement.HMS.Domain.user.User;
 import com.example.hospitalManagement.HMS.repository.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/x-ray")
+@RequestMapping("/api/v1/{xrayID}/x-ray")
 @PreAuthorize("hasRole('XRAY')")
 public class XRayController {
 
     private final VisitRepository visitRepository;
     private final XRayRepository xRayRepository;
+    private final UserRepository userRepository;
 
     public XRayController(
             VisitRepository visitRepository,
-            XRayRepository xRayRepository
-    ) {
+            XRayRepository xRayRepository,
+            UserRepository userRepository) {
         this.visitRepository = visitRepository;
         this.xRayRepository = xRayRepository;
+        this.userRepository = userRepository;
     }
 
     @GetMapping
@@ -53,10 +56,15 @@ public class XRayController {
     @PreAuthorize("hasAuthority('xray:create')")
     public XRay createXRay(
             @RequestBody XRay xray,
-            @PathVariable Integer visitId
+            @PathVariable Integer visitId,
+            @PathVariable int   xrayID
     ) {
         Visit visit = visitRepository.findById(visitId)
                 .orElseThrow(() -> new IllegalArgumentException("Visit not found."));
+        User xrayUser = userRepository.findById(xrayID)
+                .orElseThrow(() -> new IllegalArgumentException("X-Ray lab not found."));
+
+        visit.setXray(xrayUser);
         visit.setX_ray_image(xray);
         return xRayRepository.save(xray);
     }
