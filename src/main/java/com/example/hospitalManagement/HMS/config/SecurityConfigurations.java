@@ -37,6 +37,8 @@ public class SecurityConfigurations {
                 .permitAll()
                         .requestMatchers("/all/**")
                         .permitAll()
+                        .requestMatchers("/profile/**")
+                        .permitAll()
 
                     //another way
                 /* .requestMatchers("/api/v1/admin/**").hasRole(ADMIN.name())

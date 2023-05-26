@@ -1,20 +1,28 @@
 package com.example.hospitalManagement.HMS.DTO;
 
-import com.example.hospitalManagement.HMS.Domain.Patient;
-import com.example.hospitalManagement.HMS.Domain.user.User;
+import com.example.hospitalManagement.HMS.Domain.BloodType;
+import com.example.hospitalManagement.HMS.Domain.Gender;
+import com.example.hospitalManagement.HMS.Domain.Visit;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.Date;
+import java.util.Set;
 
 
 @Getter
 @Setter
-public class PatientProfileDTO {
-    private Patient patient;
-    private User user;
+public class PatientProfileDTO extends UserDTO{
 
-    public PatientProfileDTO(Patient patient, User user) {
-        this.patient = patient;
-        this.user = user;
-    }
+    private Date birthday;
+    private Gender gender;
+    private BloodType bloodType;
+    private Double height;
+    private Double weight;
+    private String allergies;
+
+    private Set<VisitDTO> visits;
+
+
 
 }

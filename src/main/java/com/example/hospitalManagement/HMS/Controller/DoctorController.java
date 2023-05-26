@@ -3,7 +3,10 @@ package com.example.hospitalManagement.HMS.Controller;
 
 import com.example.hospitalManagement.HMS.Controller.Visit.VisitDetailsRequest;
 import com.example.hospitalManagement.HMS.Controller.Visit.VisitRequest;
+import com.example.hospitalManagement.HMS.DTO.VisitDTO;
+import com.example.hospitalManagement.HMS.Domain.Patient;
 import com.example.hospitalManagement.HMS.Domain.Visit;
+import com.example.hospitalManagement.HMS.Domain.user.Role;
 import com.example.hospitalManagement.HMS.Domain.user.User;
 import com.example.hospitalManagement.HMS.repository.*;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,6 +32,7 @@ public class DoctorController {
     }
 
 
+
     @GetMapping
     @PreAuthorize("hasAuthority('doctor:read')")
     public String get() {
@@ -52,6 +56,26 @@ public class DoctorController {
     public String delete() {
         return "DELETE:: doctor controller";
     }
+
+
+    @ResponseBody
+    @GetMapping("/profile/{id}")
+    public Object getProfileById(@PathVariable Integer id) {
+        User user = userRepository.findById(id).orElse(null);
+        if (user == null) {
+            throw new IllegalArgumentException("User not found.");
+        }
+        if (user.getRole() == Role.PATIENT) {
+            System.out.println(id);
+            System.out.println();
+
+            Patient patient =patientRepository.findById(id).orElseThrow();
+            return patient;
+        } else {
+            return user;
+        }
+    }
+
 
 
         // the visit will create by doctor/Patient ,and the visit table will contain doctor,Patient id only
@@ -96,8 +120,32 @@ public class DoctorController {
 
 
 
+    // based on id for all
+    @ResponseBody
+    @GetMapping("/visit-details/{visitId}")
+    @PreAuthorize("hasAuthority('doctor:read')")
+    public VisitDTO getVisitDetails(@PathVariable int visitId) {
 
+        Visit visit = visitRepository.findById(visitId)
+                .orElseThrow(() -> new IllegalArgumentException("Visit not found."));
 
+        VisitDTO visitDTO = new VisitDTO();
+        visitDTO.setId(visit.getId());
+        visitDTO.setSummary(visit.getSummary());
+        visitDTO.setDescription(visit.getDescription());
+        visitDTO.setTreatment(visit.getTreatment());
+        visitDTO.setPrescription(visit.getPrescription());
+        visitDTO.setPatientId(visit.getPatient() != null ? visit.getPatient().getId() : null);
+        visitDTO.setDoctorId(visit.getDoctor() != null ? visit.getDoctor().getId() : null);
+        visitDTO.setPharmacistId(visit.getPharmacist() != null ? visit.getPharmacist().getId() : null);
+        visitDTO.setLabId(visit.getLab() != null ? visit.getLab().getId() : null);
+        visitDTO.setXrayId(visit.getXray() != null ? visit.getXray().getId() : null);
+        visitDTO.setMedicineId(visit.getMedicine() != null ? visit.getMedicine().getId() : null);
+        visitDTO.setTestId(visit.getTest() != null ? visit.getTest().getId() : null);
+        visitDTO.setXRayImageId(visit.getX_ray_image() != null ? visit.getX_ray_image().getId() : null);
+
+        return visitDTO;
+    }
 
 
 }

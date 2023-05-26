@@ -1,19 +1,21 @@
 package com.example.hospitalManagement.HMS.Controller;
 
 
-import com.example.hospitalManagement.HMS.Controller.Visit.VisitDetailsRequest;
-import com.example.hospitalManagement.HMS.Controller.Visit.VisitRequest;
+import com.example.hospitalManagement.HMS.DTO.PatientProfileDTO;
+import com.example.hospitalManagement.HMS.DTO.UserDTO;
+import com.example.hospitalManagement.HMS.DTO.VisitDTO;
 import com.example.hospitalManagement.HMS.Domain.*;
 import com.example.hospitalManagement.HMS.Domain.user.Role;
 import com.example.hospitalManagement.HMS.Domain.user.User;
 import com.example.hospitalManagement.HMS.repository.*;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Controller;
+import com.example.hospitalManagement.HMS.service.VisitService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 public class HomeController {
@@ -24,6 +26,7 @@ public class HomeController {
     private final XRayRepository xRayRepository;
     private final TestRepository testRepository;
     private final MedicineRepository medicineRepository;
+    private final VisitService visitService;
 
     public HomeController(
             UserRepository userRepository,
@@ -31,83 +34,120 @@ public class HomeController {
             VisitRepository visitRepository,
             XRayRepository xRayRepository,
             TestRepository testRepository,
-            MedicineRepository medicineRepository
-    ) {
+            MedicineRepository medicineRepository,
+            VisitService visitService) {
         this.userRepository = userRepository;
         this.patientRepository = patientRepository;
         this.visitRepository = visitRepository;
         this.xRayRepository = xRayRepository;
         this.testRepository = testRepository;
         this.medicineRepository = medicineRepository;
+        this.visitService = visitService;
     }
 
-
-    // get profile by id (for all users)
     @ResponseBody
     @GetMapping("/profile/{id}")
-    public Object getProfileById(@PathVariable Integer id) {
-        User user = userRepository.findById(id).orElse(null);
+    public UserDTO getProfileById(@PathVariable Integer id) {
+
+        User user = userRepository.findById(id)
+                .orElse(null);
         if (user == null) {
-            throw new IllegalArgumentException("User not found.");
+            System.out.println("user not found!");
         }
         if (user.getRole() == Role.PATIENT) {
-            return patientRepository.findById(id).orElse(null);
+
+            Patient patient = patientRepository.findById(id).orElseThrow();
+
+            PatientProfileDTO patientProfileDTO = new PatientProfileDTO();
+            BeanUtils.copyProperties(user, patientProfileDTO, "password", "tokens", "enabled", "authorities",
+                    "accountNonLocked", "credentialsNonExpired", "accountNonExpired");
+
+            Set<VisitDTO> visitDTOs = patient.getVisits().stream()
+                    .map(visitService::convertToVisitDTO)
+                    .collect(Collectors.toSet());
+
+            patientProfileDTO.setVisits(visitDTOs);
+
+            return patientProfileDTO;
+
         } else {
-            return user;
+            UserDTO userDTO = new UserDTO();
+            BeanUtils.copyProperties(user, userDTO, "password", "tokens", "enabled", "authorities",
+                    "accountNonLocked", "credentialsNonExpired", "accountNonExpired");
+
+            return userDTO;
         }
     }
 
     // get all doctors
     @ResponseBody
     @GetMapping("/all/doctors")
-    public List<User> getAllDoctors() {
-        return userRepository.findAllByRole(Role.DOCTOR);
+    public List<UserDTO> getAllDoctors() {
+        List<User> doctors = userRepository.findAllByRole(Role.DOCTOR);
+        List<UserDTO> doctorDTOs = new ArrayList<>();
+
+        for (User doctor : doctors) {
+            UserDTO dto = new UserDTO();
+            BeanUtils.copyProperties(doctor, dto, "password", "tokens", "enabled", "authorities",
+                    "accountNonLocked", "credentialsNonExpired", "accountNonExpired");
+            doctorDTOs.add(dto);
+        }
+
+        return doctorDTOs;
     }
 
     // get all labs
     @ResponseBody
     @GetMapping("/all/labs")
-    public List<User> getAllLabs() {
-        return userRepository.findAllByRole(Role.LAB);
-    }
+    public List<UserDTO> getAllLabs() {
+        List<User> labs = userRepository.findAllByRole(Role.LAB);
+        List<UserDTO> labDTOs = new ArrayList<>();
 
+        for (User lab : labs) {
+            UserDTO dto = new UserDTO();
+            BeanUtils.copyProperties(lab, dto, "password", "tokens", "enabled", "authorities",
+                    "accountNonLocked", "credentialsNonExpired", "accountNonExpired");
+            labDTOs.add(dto);
+        }
+
+        return labDTOs;
+    }
     // get all pharmacists
     @ResponseBody
     @GetMapping("/all/pharmacists")
-    public List<User> getAllPharmacists() {
-        return userRepository.findAllByRole(Role.PHARMACIST);
+    public List<UserDTO> getAllPharmacists() {
+        List<User> pharmacists = userRepository.findAllByRole(Role.PHARMACIST);
+        List<UserDTO> pharmacistDTOs = new ArrayList<>();
+
+        for (User pharmacist : pharmacists) {
+            UserDTO dto = new UserDTO();
+            BeanUtils.copyProperties(pharmacist, dto, "password", "tokens", "enabled", "authorities",
+                    "accountNonLocked", "credentialsNonExpired", "accountNonExpired");
+            pharmacistDTOs.add(dto);
+        }
+
+        return pharmacistDTOs;
     }
+
+
 
     // get all x-rays
     @ResponseBody
     @GetMapping("/all/x-rays")
-    public List<User> getAllXRays() {
-        return userRepository.findAllByRole(Role.XRAY);
-    }
+    public List<UserDTO> getAllXRays() {
 
 
-// based on id for all
+        List<User> xrays = userRepository.findAllByRole(Role.XRAY);
+        List<UserDTO> xrayDTOs = new ArrayList<>();
 
-    @ResponseBody
-    @GetMapping("/visit-details/{visitId}")
-    @PreAuthorize("hasAnyAuthority('doctor:read', 'patient:read')")
-    public Visit getVisitDetails(@PathVariable Integer visitId, Authentication authentication) {
-        Visit visit = visitRepository.findById(visitId)
-                .orElseThrow(() -> new IllegalArgumentException("Visit not found."));
-
-        // Get the username of the authenticated user
-        String username = authentication.getName();
-
-        // Check if the authenticated user has the role of "ROLE_PATIENT" and is the owner of the visit
-        if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_PATIENT"))) {
-            User patient = visit.getPatient();
-            if (!patient.getUsername().equals(username)) {
-                throw new AccessDeniedException("You are not authorized to access this visit.");
-            }
+        for (User xray : xrays) {
+            UserDTO dto = new UserDTO();
+            BeanUtils.copyProperties(xray, dto, "password", "tokens", "enabled", "authorities",
+                    "accountNonLocked", "credentialsNonExpired", "accountNonExpired");
+            xrayDTOs.add(dto);
         }
 
-
-        return visit;
+        return xrayDTOs;
     }
 
 
