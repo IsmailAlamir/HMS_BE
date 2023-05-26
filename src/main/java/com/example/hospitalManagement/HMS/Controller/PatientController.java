@@ -1,25 +1,27 @@
 package com.example.hospitalManagement.HMS.Controller;
 
 
+import com.example.hospitalManagement.HMS.DTO.VisitDTO;
 import com.example.hospitalManagement.HMS.Domain.Patient;
-import com.example.hospitalManagement.HMS.auth.AuthenticationResponse;
+import com.example.hospitalManagement.HMS.Domain.Visit;
 import com.example.hospitalManagement.HMS.repository.*;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/v1/patient")
+@RequestMapping("/api/v1/{patientID}/patient")
 @PreAuthorize("hasRole('PATIENT')")
 public class PatientController {
     private final PatientRepository patientRepository;
+    private final VisitRepository visitRepository;
+
 
     public PatientController(
-            PatientRepository patientRepository
-    ) {
+            PatientRepository patientRepository,
+            VisitRepository visitRepository) {
         this.patientRepository = patientRepository;
+        this.visitRepository = visitRepository;
     }
 
     @GetMapping
@@ -47,10 +49,11 @@ public class PatientController {
     }
 
 
+
     @ResponseBody
-    @PutMapping("{id}/info")
+    @PutMapping("/info")
     @PreAuthorize("hasAuthority('patient:update')")
-    public String updatePatientInfo(@PathVariable("id") Integer id, @RequestBody Patient updatedPatient) {
+    public String updatePatientInfo(@PathVariable("patientID") Integer id, @RequestBody Patient updatedPatient) {
         Patient patient = patientRepository.findById(id)
                 .orElseThrow();
 
@@ -71,6 +74,31 @@ public class PatientController {
         return "Info updated";
     }
 
+    // based on id for all
+    @ResponseBody
+    @GetMapping("/visit-details/{visitId}")
+    @PreAuthorize("hasAuthority('patient:read')")
+    public VisitDTO getVisitDetails(@PathVariable int visitId) {
+        Visit visit = visitRepository.findById(visitId)
+                .orElseThrow(() -> new IllegalArgumentException("Visit not found."));
+
+        VisitDTO visitDTO = new VisitDTO();
+        visitDTO.setId(visit.getId());
+        visitDTO.setSummary(visit.getSummary());
+        visitDTO.setDescription(visit.getDescription());
+        visitDTO.setTreatment(visit.getTreatment());
+        visitDTO.setPrescription(visit.getPrescription());
+        visitDTO.setPatientId(visit.getPatient() != null ? visit.getPatient().getId() : null);
+        visitDTO.setDoctorId(visit.getDoctor() != null ? visit.getDoctor().getId() : null);
+        visitDTO.setPharmacistId(visit.getPharmacist() != null ? visit.getPharmacist().getId() : null);
+        visitDTO.setLabId(visit.getLab() != null ? visit.getLab().getId() : null);
+        visitDTO.setXrayId(visit.getXray() != null ? visit.getXray().getId() : null);
+        visitDTO.setMedicineId(visit.getMedicine() != null ? visit.getMedicine().getId() : null);
+        visitDTO.setTestId(visit.getTest() != null ? visit.getTest().getId() : null);
+        visitDTO.setXRayImageId(visit.getX_ray_image() != null ? visit.getX_ray_image().getId() : null);
+
+        return visitDTO;
+    }
 
 }
 

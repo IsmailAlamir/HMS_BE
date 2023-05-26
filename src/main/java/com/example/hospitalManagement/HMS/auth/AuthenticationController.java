@@ -1,7 +1,6 @@
 package com.example.hospitalManagement.HMS.auth;
 
 import com.example.hospitalManagement.HMS.Domain.Patient;
-import com.example.hospitalManagement.HMS.Domain.user.Role;
 import com.example.hospitalManagement.HMS.Domain.user.User;
 import com.example.hospitalManagement.HMS.repository.PatientRepository;
 import com.example.hospitalManagement.HMS.repository.UserRepository;
