@@ -20,13 +20,6 @@ public class AuthenticationController {
 
 
 
-//    @ResponseBody
-//    @PostMapping("/new-patient")
-//    public Patient createNewUser(@RequestBody Patient patient){
-//
-//        return patientRepository.save(patient);
-//
-//    }
     @ResponseBody
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> createNewUser(@RequestBody Patient patient){
