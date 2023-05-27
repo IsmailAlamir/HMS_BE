@@ -1,5 +1,9 @@
 # Hospital Management System (HMS)
 
+## ADMIN USER:
+username : admin
+password : password
+
 ## Routes :
 
 ### 1. User Registration:
